@@ -16,7 +16,8 @@ devlopment, so it may be a good idea to port this code over to SQLite in the fut
 Current features:
 Allows the user to "login" to this localhost DB.
 Allows the user to create a new "login" for the localhost DB.
+Allows the user to perform simple actions like printing users or user history.
+All actions the user takes are logged (except user creation due to an issue)
 
 Future features:
-Users will be able to perform simple actions like printing out users or user history.
-All actions a "logged in" user will make are logged into the second table.
+Remaining user actions will be logged.
