@@ -149,6 +149,7 @@ bool DB::loginUser(){
 			std::cout << "User found!" << std::endl;
 			std::cout << "Welcome in, " << this->userFN << " " << this->userLN << "!" << std::endl;
 			this->clearQuery();
+			this->logQuery("User logged in");
 			return true;
 		}
 		else{
@@ -216,6 +217,7 @@ bool DB::queryDBforUsers(){
 		this->clearQuery();
 
 		std::cout << "That's everyone!" << std::endl;
+		this->logQuery("User queried DB for users");
 		return true;
 	}
 	catch(sql::SQLException &e){
@@ -227,14 +229,45 @@ bool DB::queryDBforUsers(){
 }
 
 bool DB::checkMyHistory(){
+	//variables we need...
+	//See prior functions
+	std::string customQuery;
+	std::ostringstream* stream = nullptr;
+	std::string dtime, desc; //the current date/time
 	//Simply do a SELECT WHERE userID is current userID
 	//Errors shouldn't be here but just in case,
 	//error catching tells us why a SELECT * failed.
 	try{
 		std::cout << "Printing history..." << std::endl;
-		//code to print all users here
+		//code to print all history here
 
+		//build query using stringstream and store in string
+		stream = new std::ostringstream;
+		customQuery.erase();
+		*stream << "SELECT qryDateTime, qryDescription FROM query WHERE usrID = " << this->userID;
+		customQuery = stream->str();
+		delete(stream);
+
+		//execute built query
+		this->statement = this->connect->createStatement();
+		this->results = this->statement->executeQuery(customQuery);
+		std::cout.width(15);
+		std::cout << std::left << "Time:";
+		std::cout.width(20);
+		std::cout << std::left << "Description:" << std::endl;
+		while (this->results->next()){
+			//fill in the values where applicable:
+			dtime = this->results->getString(1);
+			desc = this->results->getString(2);
+
+			std::cout.width(20);
+			std::cout << std::left << dtime;
+			std::cout.width(20);
+			std::cout << std::left << desc << std::endl;
+		}
+		this->clearQuery();
 		std::cout << "That's everything!" << std::endl;
+		this->logQuery("User checked history");
 		return true;
 	}
 	catch(sql::SQLException &e){
@@ -252,6 +285,7 @@ void DB::userLogout(){
 	usrnpt = getUsrTxt();
 	if (usrnpt=="y"){
 		std::cout << "Logging out..." << std::endl;
+		this->logQuery("User logged out");
 		//When user's credentials are flushed, we know they're logged out
 		this->flushUser();
 	}
@@ -267,6 +301,33 @@ void DB::clearQuery(){
 	if (this->statement){
 		delete this->statement;
 		this->statement = nullptr;
+	}
+}
+
+bool DB::logQuery(std::string desc){
+	//perform an insert every time a logged in user does something
+	std::string customQuery;
+	std::ostringstream* stream = nullptr;
+	try{
+		stream = new std::ostringstream;
+		customQuery.erase();
+		*stream << "INSERT INTO `query` (qryDateTime, qryDescription, usrID) VALUES ("
+				<< "now()" << ", '" << desc << "', '" << this->userID
+				<< "');";
+		customQuery = stream->str();
+		delete(stream);
+
+		//execute query
+		this->statement = this->connect->createStatement();
+		this->results = this->statement->executeQuery(customQuery);
+		this->clearQuery();
+		return true;
+	}
+	catch (sql::SQLException &e){
+		this->errHandle(e);
+		std::cout << "Failed to log query" << std::endl;
+		this->clearQuery();
+		return false;
 	}
 }
 

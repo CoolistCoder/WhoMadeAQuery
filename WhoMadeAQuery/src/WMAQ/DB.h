@@ -72,6 +72,9 @@ private:
 	//situational
 	void clearQuery(); //clears the pointers used for query building
 
+	//Called every time an action is taken while a user is logged in
+	bool logQuery(std::string desc);
+
 public:
 	//obligatory getters/setters section
 	bool getRunstate(){return this->runstate;};
