@@ -177,6 +177,12 @@ void DB::quitOut(){
 }
 
 bool DB::queryDBforUsers(){
+	//variables we need...
+	//See prior functions
+	std::string customQuery = "SELECT * FROM user";
+	std::string fn, ln; //first and last name from the data
+	unsigned int id; //user's retrieved id
+
 	//Simply do a SELECT * to output all users in DB
 	//Errors shouldn't be here but just in case,
 	//error catching tells us why a SELECT * failed.
@@ -184,14 +190,40 @@ bool DB::queryDBforUsers(){
 		std::cout << "Printing all users..." << std::endl;
 		//code to print all users here
 
+		//execute built query
+		this->statement = this->connect->createStatement();
+		this->results = this->statement->executeQuery(customQuery);
+		std::cout.width(6);
+		std::cout << std::left << "ID:";
+		std::cout.width(20);
+		std::cout << std::left << "First Name:";
+		std::cout.width(20);
+		std::cout << std::left << "Last Name:" << std::endl;
+		while (this->results->next()){
+			//fill in the values where applicable:
+			id = this->results->getUInt(1);
+			fn = this->results->getString(2);
+			ln = this->results->getString(3);
+
+			std::cout.width(6);
+			std::cout << std::left << id;
+			std::cout.width(20);
+			std::cout << std::left << fn;
+			std::cout.width(20);
+			std::cout << std::left << ln << std::endl;
+		}
+		//Clear query before a poor computer gets hurt
+		this->clearQuery();
+
 		std::cout << "That's everyone!" << std::endl;
 		return true;
 	}
 	catch(sql::SQLException &e){
 		this->errHandle(e);
-		std::cout << "Printing users" << std::endl;
+		std::cout << "Error printing users" << std::endl;
 		return false;
 	}
+	return false;
 }
 
 bool DB::checkMyHistory(){

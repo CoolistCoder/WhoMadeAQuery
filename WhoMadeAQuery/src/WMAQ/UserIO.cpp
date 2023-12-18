@@ -21,7 +21,7 @@ unsigned int getUsrInt(){
 std::string getUsrTxt(){
 	//getline can be used to retrieve text input
 	std::string usrin;
-	//std::getline(std::cin, usrin);
+	//std::getline(std::cin, usrin); //this breaks the code
 	std::cin >> usrin;
 	return usrin;
 }

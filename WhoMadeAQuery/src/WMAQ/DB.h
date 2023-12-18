@@ -13,6 +13,7 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <sstream>
+#include <iomanip>
 #include "UserIO.h"
 
 //These enums are used to determine what the DB should do

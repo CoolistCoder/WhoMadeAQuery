@@ -14,6 +14,7 @@
 #include <limits>
 
 //standard user io stuff
+//Ignores inputs for getline (getline isn't working, don't use this.)
 inline void flushin(){
 	std::cin.ignore();
 }
